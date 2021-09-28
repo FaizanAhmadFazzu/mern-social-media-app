@@ -20,7 +20,6 @@ const PageRender = () => {
     } else {
         pageNam = `${page}`
     }
-    console.log(pageNam);
     return generatePage(pageNam)
 }
 
