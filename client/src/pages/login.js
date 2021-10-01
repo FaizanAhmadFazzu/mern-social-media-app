@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/actions/authAction";
 
 const Login = () => {
+  const history = useHistory();
+  const { auth, alert } = useSelector(state => state);
+
+
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
   const { email, password } = userData;
@@ -11,6 +15,10 @@ const Login = () => {
   const [typePass, setTypePass] = useState(false);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(auth.token) history.push("/");
+  }, [auth.token, history])
 
   const handleChangeInput = e => {
     const { name, value } = e.target;
@@ -60,7 +68,7 @@ const Login = () => {
         </div>
 
         <button type="submit" className="btn btn-dark w-100" disabled={email && password ? false : true}>
-          Submit
+          Login
         </button>
         <p className="my-2">You don't have an account? <Link to={"/register"} style={{ color: "crimson" }}>Register Now</Link></p>
       </form>
