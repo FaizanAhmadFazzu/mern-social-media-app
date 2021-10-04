@@ -39,7 +39,16 @@
     object-fit: cover;
   }
 
+
+  /* -------------- AUTH ---------------- */
   @import url("./auth.css");
 
 
+  /* -------------- LOADING ---------------- */
   @import url("./loading.css");
+
+   /* -------------- HEADER ---------------- */
+   @import url("./header.css");
+
+      /* -------------- AVATAR ---------------- */
+      @import url("./avatar.css");
