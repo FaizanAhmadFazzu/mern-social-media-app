@@ -1,4 +1,4 @@
-const Users = require("../models/user");
+const Users = require("../models/userModal");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { response } = require("express");
@@ -42,7 +42,7 @@ const authCtrl = {
                 }
             });
         } catch (error) {
-            return res.status(500).json({ msg: error.message })
+            return res.status(500).json({ msg: error.message });
         }
     },
     login: async (req, res) => {
