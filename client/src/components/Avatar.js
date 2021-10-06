@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import theme from '../redux/reducers/themeReducer';
 
 
 const Avatar = ({ src, size }) => {

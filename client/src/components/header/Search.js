@@ -1,33 +1,37 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { getDataAPI } from '../../utils/fetchData';
 import { useSelector, useDispatch } from 'react-redux';
 import UserCard from '../UserCard';
 import { GLOBALTYPES } from '../../redux/actions/globalTypes';
+import LoadIcon from "../../images/loading.gif"
 
 const Search = () => {
 
     const [search, setSearch] = useState('')
     const [users, setUsers] = useState([]);
+    const [load, setLoad] = useState(false);
 
     const { auth } = useSelector(state => state);
     const dispatch = useDispatch();
 
 
-    useEffect(() => {
-        if(search && auth.token) {
-            getDataAPI(`/search?username=${search}`, auth.token)
-            .then(res => setUsers(res.data.users))
-            .catch(err => {
-                dispatch({ 
-                    type: GLOBALTYPES.ALERT, payload: {error: err.response.data.msg}
-                 })
-            }) 
-        } else {
-            setUsers([]);
-        }
-        
-    }, [search, auth.token])
 
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!search) return;
+        try {
+            setLoad(true);
+            const res = await  getDataAPI(`/search?username=${search}`, auth.token);
+            setUsers(res.data.users);
+            setLoad(false)
+        } catch (err) {
+            dispatch({
+                type: GLOBALTYPES.ALERT,
+                payload: { error: err.response.data.message }
+            })
+        }
+    }
     
 
     const handleClose = async (e) => {
@@ -38,7 +42,7 @@ const Search = () => {
 
 
     return (
-        <form className="search_form" >
+        <form className="search_form" onSubmit={handleSearch}>
             <input type="text" name="search" value={search} id="search" title="Enter to Search"
                 onChange={(e) => setSearch(e.target.value.toLowerCase().replace(/ /g, ""))}
             /> 
@@ -51,6 +55,10 @@ const Search = () => {
             <div className="close_search" onClick={handleClose} style={{ opacity: users.length === 0 ? 0 : 1 }}>
                 &times;
             </div>
+
+            <button type="submit" style={{ display: "none" }}>Search</button>
+
+            { load && <img src={LoadIcon} className="loading" alt="loading" /> }
 
             <button type="submit" style={{ display: "none" }}>Search</button>
             <div className="users">

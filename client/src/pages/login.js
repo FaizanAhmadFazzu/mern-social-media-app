@@ -5,7 +5,7 @@ import { login } from "../redux/actions/authAction";
 
 const Login = () => {
   const history = useHistory();
-  const { auth, alert } = useSelector(state => state);
+  const { auth } = useSelector(state => state);
 
 
   const initialState = { email: "", password: "" };
