@@ -8,7 +8,7 @@ const Profile = () => {
   return (
     <div className="profile">
       {profile.loading ? (
-        <img src={LoadIcon} className="loading" alt="loading" />
+        <img src={LoadIcon} className="d-block mx-auto my-4" alt="loading" />
       ) : (
         <Info />
       )}
