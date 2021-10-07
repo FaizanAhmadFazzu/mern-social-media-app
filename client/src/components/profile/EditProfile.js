@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBALTYPES } from "../../redux/actions/globalTypes";
+import { updateProfileUser } from "../../redux/actions/profileAction";
 import { checkImage } from "../../utils/ImageUpload";
 
 const EditProfile = ({ setOnEdit }) => {
@@ -39,7 +40,7 @@ const EditProfile = ({ setOnEdit }) => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        console.log("handle Submit");
+        dispatch(updateProfileUser({userData, avatar, auth}))
     }
   return (
     <div className="edit_profile">
