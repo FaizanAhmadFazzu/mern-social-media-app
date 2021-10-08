@@ -33,7 +33,7 @@ const Info = () => {
             <div className="info_content_title">
               <h2>{user.username}</h2>
               {
-               user._id === auth.user._id ? <button className="btn btn-outline-info" onClick={() => setOnEdit(true)}>Edit Profile</button> : <FollowBtn />
+               user._id === auth.user._id ? <button className="btn btn-outline-info" onClick={() => setOnEdit(true)}>Edit Profile</button> : <FollowBtn  user={user} />
               }
             </div>
 

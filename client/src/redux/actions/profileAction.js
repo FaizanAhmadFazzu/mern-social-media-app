@@ -1,10 +1,12 @@
 import { getDataAPI, patchDataAPI } from "../../utils/fetchData";
-import { GLOBALTYPES } from "./globalTypes";
+import { DeleteData, GLOBALTYPES } from "./globalTypes";
 import { imageUpload } from "../../utils/ImageUpload";
 
-export const profileTypes = {
+export const PROFILE_TYPES = {
   LOADING: "LOADING",
   GET_USER: "GET_USER",
+  FOLLOW: "FOLLOW",
+  UNFOLLOW: "UNFOLLOW"
 };
 
 export const getProfileUsers =
@@ -13,16 +15,16 @@ export const getProfileUsers =
     if (users.every((user) => user._id !== id)) {
       try {
         dispatch({
-          type: profileTypes.LOADING,
+          type: PROFILE_TYPES.LOADING,
           payload: true,
         });
         const res = await getDataAPI(`/user/${id}`, auth.token);
         dispatch({
-            type: profileTypes.GET_USER,
+            type: PROFILE_TYPES.GET_USER,
             payload: res.data
         });
         dispatch({
-            type: profileTypes.LOADING,
+            type: PROFILE_TYPES.LOADING,
             payload: false,
           });
       } catch (err) {
@@ -76,3 +78,60 @@ export const getProfileUsers =
     }
 
   }
+
+  export const follow = ({ users, user, auth }) => async (dispatch)=> {
+      let newUser;
+      if(users.every((item) => item._id !== user._id)){
+        newUser = {...user, followers: [...user.followers, auth.user]}
+      } else {
+        users.forEach(item => {
+          if(item._id === user._id) {
+            newUser = {...item, followers: [...item.followers, auth.user]}
+          }
+        })
+      }
+      dispatch({
+        type: PROFILE_TYPES.FOLLOW,
+        payload: newUser
+        
+      });
+
+      dispatch({
+        type: GLOBALTYPES.AUTH,
+        payload: {
+          ...auth,
+          user: {
+            ...auth.user, following: [...auth.user.following, newUser]
+          }
+        }
+      })
+  }
+
+  export const unFollow = ({ users, user, auth }) => async (dispatch)=> {
+    let newUser;
+    if(users.every((item) => item._id !== user._id)){
+      newUser = {...user, followers: DeleteData(user.followers, auth.user._id)}
+    } else {
+      users.forEach(item => {
+        if(item._id === user._id) {
+          newUser = {...item, followers: DeleteData(item.followers, auth.user._id)}
+        }
+      })
+    }
+    dispatch({
+      type: PROFILE_TYPES.UNFOLLOW,
+      payload: newUser
+      
+    });
+
+    dispatch({
+      type: GLOBALTYPES.AUTH,
+      payload: {
+        ...auth,
+        user: {
+          ...auth.user, following: DeleteData(auth.user.following, newUser._id)
+        }
+      }
+    })
+}
+
