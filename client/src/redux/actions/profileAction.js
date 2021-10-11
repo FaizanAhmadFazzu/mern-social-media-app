@@ -105,6 +105,15 @@ export const getProfileUsers =
           }
         }
       })
+
+      try {
+        const res = await patchDataAPI(`/user/${user._id}/follow`, null, auth.token)
+      } catch (err) {
+        dispatch({
+          type: GLOBALTYPES.ALERT,
+          payload: {error: err.response.data.msg}
+        })
+      }
   }
 
   export const unFollow = ({ users, user, auth }) => async (dispatch)=> {
@@ -132,6 +141,15 @@ export const getProfileUsers =
           ...auth.user, following: DeleteData(auth.user.following, newUser._id)
         }
       }
-    })
+    });
+
+    try {
+      const res = await patchDataAPI(`/user/${user._id}/unfollow`, null, auth.token)
+    } catch (err) {
+      dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: {error: err.response.data.msg}
+      })
+    }
 }
 
