@@ -10,6 +10,7 @@ import Header from "./components/header/Header";
 import Register from "./pages/register";
 import PrivateRouter from "./customRouter/PrivateRouter";
 import StatusModal from "./components/StatusModal";
+import { getPosts } from "./redux/actions/postAction";
 
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
   useEffect(() => {
     dispatch(refreshToken());
   }, [dispatch])
+
+  useEffect(() => {
+    if(auth.token) dispatch(getPosts(auth.token))
+  }, [dispatch, auth.token])
   
   return (
     <Router>
