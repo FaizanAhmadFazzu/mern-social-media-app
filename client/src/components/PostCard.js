@@ -7,8 +7,8 @@ const PostCard = ({post, theme}) => {
     return (
         <div className="card my-3">
             <CardHeader post={post} />
-            <CardBody />
-            <CardFooter />
+            <CardBody post={post} theme={theme} />
+            <CardFooter post={post} />
         </div>
     )
 }

@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBALTYPES } from "../redux/actions/globalTypes";
-import { createPost } from "../redux/actions/postAction";
+import { createPost, updatePost } from "../redux/actions/postAction";
 
 const StatusModal = () => {
   const dispatch = useDispatch();
-  const { auth, theme } = useSelector((state) => state);
+  const { auth, theme, status } = useSelector((state) => state);
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [stream, setStream] = useState(false);
@@ -61,29 +61,38 @@ const StatusModal = () => {
     const ctx = refCanvas.current.getContext("2d");
     ctx.drawImage(videoRef.current, 0, 0, width, height);
     let URL = refCanvas.current.toDataURL();
-    setImages([...images, {camera: URL}])
-
-  }
+    setImages([...images, { camera: URL }]);
+  };
 
   const handleStopStream = () => {
-      tracks.stop();
-      setStream(false);
+    tracks.stop();
+    setStream(false);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(images.length === 0)
-    return dispatch({
-      type: GLOBALTYPES.ALERT, payload: { error: "Please add your photo." }
-    });
-
-    dispatch(createPost({content, images, auth}))
+    if (images.length === 0)
+      return dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: { error: "Please add your photo." },
+      });
+      if(status.onEdit){
+        dispatch(updatePost({ content, images, auth, status }));
+      } else {
+        dispatch(createPost({ content, images, auth }));
+      }
     setContent("");
     setImages([]);
-    if(tracks) tracks.stop();
-    dispatch({ type: GLOBALTYPES.STATUS, payload: false })
-  }
+    if (tracks) tracks.stop();
+    dispatch({ type: GLOBALTYPES.STATUS, payload: false });
+  };
 
+  useEffect(() => {
+    if (status.onEdit) {
+      setContent(status.content);
+      setImages(status.images);
+    }
+  }, [status]);
 
   return (
     <div className="status_modal">
@@ -116,7 +125,13 @@ const StatusModal = () => {
             {images.map((img, index) => (
               <div key={index} id="file_img">
                 <img
-                  src={img.camera ? img.camera : URL.createObjectURL(img)}
+                  src={
+                    img.camera
+                      ? img.camera
+                      : img.url
+                      ? img.url
+                      : URL.createObjectURL(img)
+                  }
                   alt="images"
                   style={{ filter: theme ? "invert(1)" : "invert(0)" }}
                 />

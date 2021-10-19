@@ -1,17 +1,18 @@
 import { GLOBALTYPES } from "./globalTypes";
 import { imageUpload } from "../../utils/ImageUpload";
-import { getDataAPI, postDataAPI } from "../../utils/fetchData";
+import { getDataAPI, patchDataAPI, postDataAPI } from "../../utils/fetchData";
 
 export const POST_TYPES = {
   CREATE_POST: "CREATE_POST",
   LOADING_POSTS: "LOADING_POSTS",
   GET_POSTS: "GET_POSTS",
+  UPDATE_POST: "UPDATE_POST"
 };
 
 export const createPost =
   ({ content, images, auth }) =>
   async (dispatch) => {
-    let media;
+    let media = [];
     try {
       dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
       if (images.length > 0) media = await imageUpload(images);
@@ -37,10 +38,10 @@ export const getPosts = (token) => async (dispatch) => {
   try {
     dispatch({ type: POST_TYPES.LOADING_POSTS, payload: true });
     const res = await getDataAPI("posts", token);
-    dispatch({ 
+    dispatch({
       type: POST_TYPES.GET_POSTS,
-      payload: res.data 
-     });
+      payload: res.data,
+    });
     dispatch({ type: POST_TYPES.LOADING_POSTS, payload: false });
   } catch (err) {
     dispatch({
@@ -49,3 +50,35 @@ export const getPosts = (token) => async (dispatch) => {
     });
   }
 };
+
+export const updatePost =
+  ({ content, images, auth, status }) =>
+  async (dispatch) => {
+    let media = [];
+    const imgNewUrl = images.filter((img) => !img.url);
+    const imgOldUrl = images.filter((img) => img.url);
+    if (
+      status.content === content &&
+      imgNewUrl.length === 0 &&
+      imgOldUrl.length === status.images.length
+    ) return;
+      try {
+        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
+        if (imgNewUrl.length > 0) media = await imageUpload(imgNewUrl);
+        const res = await patchDataAPI(
+          `post/${status._id}`,
+          { content, images: [...imgOldUrl, ...media] },
+          auth.token
+        );
+        dispatch({
+          type: POST_TYPES.UPDATE_POST,
+          payload: res.data.newPost,
+        });
+        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
+      } catch (err) {
+        dispatch({
+          type: GLOBALTYPES.ALERT,
+          payload: { error: err.response.data.msg },
+        });
+      }
+  };
