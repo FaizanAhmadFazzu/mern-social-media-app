@@ -7,10 +7,11 @@ import EditProfile from "./EditProfile";
 import FollowBtn from "../FollowBtn";
 import Followers from "./Followers";
 import Following from "./Following";
+import { GLOBALTYPES } from "../../redux/actions/globalTypes";
 
 const Info = () => {
   const { id } = useParams();
-  const { auth, profile } = useSelector((state) => state);
+  const { auth, profile, theme } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const [userData, setUserData] = useState([]);
@@ -28,11 +29,19 @@ const Info = () => {
     }
   }, [id, auth, dispatch, profile.users]);
 
+  useEffect(() => {
+    if( showFollowers || showFollowing || onEdit ) {
+      dispatch({type: GLOBALTYPES.MODAL, payload: true})
+    } else {
+      dispatch({type: GLOBALTYPES.MODAL, payload: false})
+    }
+  }, [showFollowers, showFollowing, onEdit])
+
   return (
     <div className="info">
       {userData.map((user) => (
         <div className="infoContainer" key={user._id}>
-          <Avatar src={user.avatar} size="supper-avatar" />
+          <Avatar src={user.avatar} size="supper-avatar"  />
           <div className="info_content">
             <div className="info_content_title">
               <h2>{user.username}</h2>

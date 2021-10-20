@@ -6,7 +6,7 @@ export const POST_TYPES = {
   CREATE_POST: "CREATE_POST",
   LOADING_POSTS: "LOADING_POSTS",
   GET_POSTS: "GET_POSTS",
-  UPDATE_POST: "UPDATE_POST"
+  UPDATE_POST: "UPDATE_POST",
 };
 
 export const createPost =
@@ -61,24 +61,61 @@ export const updatePost =
       status.content === content &&
       imgNewUrl.length === 0 &&
       imgOldUrl.length === status.images.length
-    ) return;
-      try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-        if (imgNewUrl.length > 0) media = await imageUpload(imgNewUrl);
-        const res = await patchDataAPI(
-          `post/${status._id}`,
-          { content, images: [...imgOldUrl, ...media] },
-          auth.token
-        );
-        dispatch({
-          type: POST_TYPES.UPDATE_POST,
-          payload: res.data.newPost,
-        });
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-      } catch (err) {
-        dispatch({
-          type: GLOBALTYPES.ALERT,
-          payload: { error: err.response.data.msg },
-        });
-      }
+    )
+      return;
+    try {
+      dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
+      if (imgNewUrl.length > 0) media = await imageUpload(imgNewUrl);
+      const res = await patchDataAPI(
+        `post/${status._id}`,
+        { content, images: [...imgOldUrl, ...media] },
+        auth.token
+      );
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: res.data.newPost,
+      });
+      dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
+    } catch (err) {
+      dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+export const likePost =
+  ({ post, auth }) =>
+  async (dispatch) => {
+    const newPost = { ...post, likes: [...post.likes, auth.user] };
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+    try {
+      await patchDataAPI(`post/${post._id}/like`, null, auth.token);
+    } catch (err) {
+      dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+  export const unLikePost =
+  ({ post, auth }) =>
+  async (dispatch) => {
+    const newPost = { ...post, likes: post.likes.filter(like => like._id !== auth.user._id) };
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+    try {
+      await patchDataAPI(`post/${post._id}/unlike`, null, auth.token);
+    } catch (err) {
+      dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
   };

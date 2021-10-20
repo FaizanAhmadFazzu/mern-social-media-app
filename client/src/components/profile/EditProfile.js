@@ -53,7 +53,7 @@ const EditProfile = ({ setOnEdit }) => {
 
       <form onSubmit={handleSubmit}>
           <div className="info_avatar">
-              <img src={ avatar ? URL.createObjectURL(avatar): auth.user.avatar } alt="avatar" style={{ fliter: theme ? "invert(1)": "invert(0)" }} />
+              <img src={ avatar ? URL.createObjectURL(avatar): auth.user.avatar } alt="avatar" style={{ filter: theme ? "invert(1)": "invert(0)" }} />
               <span>
                 <i className="fas fa-camera"></i>
                   <p>change</p>
