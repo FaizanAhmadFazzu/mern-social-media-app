@@ -11,7 +11,7 @@ import { GLOBALTYPES } from "../../redux/actions/globalTypes";
 
 const Info = () => {
   const { id } = useParams();
-  const { auth, profile, theme } = useSelector((state) => state);
+  const { auth, profile } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const [userData, setUserData] = useState([]);
@@ -35,7 +35,7 @@ const Info = () => {
     } else {
       dispatch({type: GLOBALTYPES.MODAL, payload: false})
     }
-  }, [showFollowers, showFollowing, onEdit])
+  }, [showFollowers, showFollowing, onEdit, dispatch])
 
   return (
     <div className="info">
