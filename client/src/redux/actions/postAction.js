@@ -7,6 +7,7 @@ export const POST_TYPES = {
   LOADING_POSTS: "LOADING_POSTS",
   GET_POSTS: "GET_POSTS",
   UPDATE_POST: "UPDATE_POST",
+  GET_POST: "GET_POST",
 };
 
 export const createPost =
@@ -102,10 +103,13 @@ export const likePost =
     }
   };
 
-  export const unLikePost =
+export const unLikePost =
   ({ post, auth }) =>
   async (dispatch) => {
-    const newPost = { ...post, likes: post.likes.filter(like => like._id !== auth.user._id) };
+    const newPost = {
+      ...post,
+      likes: post.likes.filter((like) => like._id !== auth.user._id),
+    };
     dispatch({
       type: POST_TYPES.UPDATE_POST,
       payload: newPost,
@@ -117,5 +121,21 @@ export const likePost =
         type: GLOBALTYPES.ALERT,
         payload: { error: err.response.data.msg },
       });
+    }
+  };
+
+export const getPost =
+  ({ detailPost, id, auth }) =>
+  async (dispatch) => {
+    if (detailPost.every((post) => post._id !== id)) {
+      try {
+        const res = await getDataAPI(`post/${id}`, auth.token);
+        dispatch({ type: POST_TYPES.GET_POST, payload: res.data.post });
+      } catch (err) {
+        dispatch({
+          type: GLOBALTYPES.ALERT,
+          payload: { error: err.response.data.msg },
+        });
+      }
     }
   };

@@ -64,6 +64,12 @@ img {
 /* -------------- Comments ---------------- */
 @import url("./comments.css");
 
+/* -------------- Comments ---------------- */
+@import url("./comments.css");
+
+/* -------------- Post Thumb ---------------- */
+@import url("./post_thumb.css");
+
 
 .mode {
   width: 100%;

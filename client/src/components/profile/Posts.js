@@ -1,10 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import PostThumb from '../PostThumb';
 
-const Posts = () => {
+const Posts = ({ auth, id, dispatch, profile }) => {
+
+    const [posts, setPosts] = useState([]);
+    const [result, setResult] = useState(9);
+    const [page, setPage] = useState(0);
+    const [load, setLoad] = useState(false);
+
+    useEffect(() => {
+        profile.posts.forEach(data => {
+            if(data._id === id){
+                setPosts(data.posts);
+                setResult(data.result);
+                setPage(data.page);
+            }
+        });
+    }, [profile.posts, id])
+
     return (
-        <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur, ducimus non. Impedit ullam provident qui molestias eveniet quis, voluptate omnis recusandae, accusantium deserunt nostrum exercitationem quaerat expedita fugiat temporibus beatae ea officiis aspernatur saepe. Iste, veniam! Ipsa, fuga. Consequuntur autem asperiores officiis adipisci inventore error deserunt iusto nisi fugit, similique earum dolores voluptates vel ea voluptate eius quas porro, sint sit. Natus tenetur repudiandae, reprehenderit neque excepturi, debitis corporis soluta distinctio aperiam autem sed at iure commodi, libero placeat saepe? Dicta reiciendis exercitationem temporibus corporis fugiat ab, libero vel enim sint ullam a molestiae obcaecati nostrum est, eos, porro placeat labore possimus deserunt vero earum eveniet. Cum impedit at vero saepe autem dolorem iusto ab blanditiis consectetur iure! Delectus ad repellendus quod, sunt cumque voluptatum reiciendis alias sed quas modi minima voluptates molestias blanditiis, distinctio nostrum culpa provident fugit ducimus. Consequatur alias odio nostrum, est officiis nisi laborum itaque recusandae enim fuga asperiores ipsam nam suscipit laudantium aut dolore rerum! Dicta, tenetur asperiores! Tenetur laborum iste repudiandae pariatur, molestiae animi nostrum harum? Ipsum sit architecto totam hic sed velit, eligendi repellat sint voluptates perspiciatis esse adipisci corporis consequuntur eum. Minus perferendis vel sunt reiciendis veritatis voluptates recusandae? Ut labore doloribus harum fugit iure sed porro sapiente molestiae consequuntur consequatur commodi, saepe eius tempora laboriosam ex alias quibusdam? Reiciendis, rem itaque veritatis, dolorum consectetur a minus fugiat vero reprehenderit explicabo perspiciatis beatae tempora debitis? Quis itaque voluptate suscipit cupiditate ipsa, veritatis tempora dolorum similique nostrum magni, debitis hic iusto perspiciatis? Nesciunt, debitis dicta dolorum sequi nam magni assumenda hic esse, iste distinctio ducimus quidem necessitatibus fugiat! Nemo et consequatur quidem dolores exercitationem repudiandae alias eligendi. Accusamus consectetur aspernatur harum doloremque quae sapiente dolor vitae neque eum explicabo. Unde id placeat voluptas obcaecati ratione repellendus? Esse nam consequuntur possimus maxime nemo rerum id quis vero est fugit a commodi corporis perspiciatis odit, quae similique fuga nostrum deserunt! Doloremque vero minima, aliquid in doloribus consequuntur culpa magni deserunt distinctio. Iste animi sequi dolore recusandae, odit voluptatem consectetur provident nisi iusto praesentium, repudiandae deleniti obcaecati sed ducimus consequuntur, veniam omnis quam delectus error! Suscipit totam perspiciatis odio inventore, vitae sed tempora culpa exercitationem minus quaerat voluptatem corporis placeat molestiae ipsam voluptas quam temporibus, iusto sint rerum optio dolorum officia? Porro omnis ut quos nostrum quis impedit odit debitis exercitationem nulla tempora voluptate, deserunt consectetur molestiae provident deleniti fugiat! Impedit magni laboriosam earum vitae aperiam, accusantium voluptatibus, tenetur odio omnis eos, totam quisquam natus. Nulla culpa delectus minima natus quis ad dignissimos sequi quaerat optio numquam. Molestiae quaerat totam ducimus, quia error maxime sequi nihil laboriosam tenetur ad enim dolorum vel repellendus. Quos dolor reiciendis dolores assumenda provident aspernatur ex dolorem! Porro ipsum maxime eos qui dolores sit cupiditate sequi possimus veritatis! Fuga consectetur fugiat ipsam suscipit natus sint aliquid molestiae iure pariatur dolore. Non eveniet nulla aspernatur ipsam doloribus harum saepe iure odit modi nam. Rem architecto minus totam excepturi quos, expedita quam cupiditate dignissimos laborum optio nemo a vitae repudiandae consequuntur error minima!
-        </div>
+       <PostThumb posts={posts} result={result} />
     )
 }
 
