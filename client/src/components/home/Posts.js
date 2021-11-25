@@ -33,7 +33,6 @@ const Posts = () => {
       {load && (
         <img
           src={LoadIcon}
-          alt={LoadIcon}
           alt="loading"
           className="d-block mx-auto"
         />

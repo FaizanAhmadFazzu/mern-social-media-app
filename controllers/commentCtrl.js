@@ -5,6 +5,16 @@ const commentCtrl = {
   createComment: async (req, res) => {
     try {
       const { postId, content, tag, reply, postUserId } = req.body;
+
+      const post = await Posts.findById(postId);
+      if (!post)
+        return res.status(400).json({ msg: "This post does not exist." });
+
+      if (reply) {
+        const cm = await Comments.findById(reply);
+        if (!cm)
+          return res.status(400).json({ msg: "This comment does not exist." });
+      }
       const newComment = new Comments({
         user: req.user._id,
         content,
@@ -83,9 +93,12 @@ const commentCtrl = {
         $or: [{ user: req.user._id }, { postUserId: req.user._id }],
       });
 
-      await Posts.findOneAndUpdate({_id: comment.postId}, {
-        $pull: { comments: req.params.id }
-      });
+      await Posts.findOneAndUpdate(
+        { _id: comment.postId },
+        {
+          $pull: { comments: req.params.id },
+        }
+      );
       res.json({ msg: "Deleted Comment!" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

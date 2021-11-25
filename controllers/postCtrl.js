@@ -1,4 +1,5 @@
 const Posts = require("../models/postModel");
+const Comments = require("../models/commentModel");
 
 class APIFeatures {
   constructor(query, queryString) {
@@ -43,10 +44,14 @@ const postCtrl = {
   },
   gePosts: async (req, res) => {
     try {
-      const features = new APIFeatures(Posts.find({
-        user: [...req.user.following, req.user._id],
-      }), req.query).paginating();
-      const posts = await features.query.sort("-createdAt")
+      const features = new APIFeatures(
+        Posts.find({
+          user: [...req.user.following, req.user._id],
+        }),
+        req.query
+      ).paginating();
+      const posts = await features.query
+        .sort("-createdAt")
         .populate("user likes", "avatar username fullname ")
         .populate({
           path: "comments",
@@ -148,7 +153,10 @@ const postCtrl = {
   },
   getUserPosts: async (req, res) => {
     try {
-      const features = new APIFeatures(Posts.find({ user: req.params.id }), req.query).paginating();
+      const features = new APIFeatures(
+        Posts.find({ user: req.params.id }),
+        req.query
+      ).paginating();
       const posts = await features.query.sort("-createdAt");
 
       res.json({
@@ -186,17 +194,35 @@ const postCtrl = {
       const num = req.query.num || 9;
       const posts = await Posts.aggregate([
         { $match: { user: { $nin: newArr } } },
-        { $sample: { size: Number(num) } }
+        { $sample: { size: Number(num) } },
       ]);
       return res.json({
         msg: "Success!",
         result: posts.length,
-        posts
+        posts,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
-  }
+  },
+  deletePost: async (req, res) => {
+    try {
+      const post = await Posts.findOneAndDelete({
+        _id: req.params.id,
+        user: req.user._id,
+      });
+      await Comments.deleteMany({ _id: { $in: post.comments } });
+      res.json({
+        msg: "Deleted Post!",
+        newPost: {
+          ...post,
+          user: req.user
+        }
+      })
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 module.exports = postCtrl;
