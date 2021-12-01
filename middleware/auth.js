@@ -13,7 +13,7 @@ const auth = async (req, res, next) => {
         next();
 
     } catch (err) {
-        return res.status(500).json({ msg: error.message })
+        return res.status(500).json({ msg: err.message })
     }
 }
 
