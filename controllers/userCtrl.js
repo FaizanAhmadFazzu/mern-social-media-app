@@ -64,7 +64,9 @@ const userCtrl = {
           $push: { followers: req.user._id },
         },
         { new: true }
-      ).populate("followers following", "-password");
+      )
+        .select("-password")
+        .populate("followers following", "-password");
       await Users.findOneAndUpdate(
         { _id: req.user._id },
         {
@@ -85,7 +87,9 @@ const userCtrl = {
           $pull: { followers: req.user._id },
         },
         { new: true }
-      ).populate("followers following", "-password");
+      )
+        .select("-password")
+        .populate("followers following", "-password");
       await Users.findOneAndUpdate(
         { _id: req.user._id },
         {
@@ -103,15 +107,29 @@ const userCtrl = {
       const newArr = [...req.user.following, req.user._id];
       const num = req.query.num || 10;
       const users = await Users.aggregate([
-        { $match: { _id: { $nin: newArr }}},
+        { $match: { _id: { $nin: newArr } } },
         { $sample: { size: Number(num) } },
-        { $lookup: { from : "users", localField: "followers", foreignField: "_id", as: "followers" } },
-        { $lookup: { from : "users", localField: "following", foreignField: "_id", as: "following"  } }
+        {
+          $lookup: {
+            from: "users",
+            localField: "followers",
+            foreignField: "_id",
+            as: "followers",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "following",
+            foreignField: "_id",
+            as: "following",
+          },
+        },
       ]).project("-password");
       return res.json({
         users,
-        result: users.length
-      })
+        result: users.length,
+      });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

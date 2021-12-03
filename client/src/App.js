@@ -13,12 +13,20 @@ import StatusModal from "./components/StatusModal";
 import { getPosts } from "./redux/actions/postAction";
 import { getSuggestions } from "./redux/actions/suggestionsAction";
 
+import io from "socket.io-client";
+import { GLOBALTYPES } from "./redux/actions/globalTypes";
+import SocketClient from "./SocketClient";
+
 function App() {
   const dispatch = useDispatch();
   const { auth, status, modal } = useSelector((state) => state);
 
   useEffect(() => {
     dispatch(refreshToken());
+
+    const socket = io();
+    dispatch({ type: GLOBALTYPES.SOCKET, payload: socket });
+    return () => socket.close();
   }, [dispatch]);
 
   useEffect(() => {
@@ -36,6 +44,7 @@ function App() {
         <div className="main">
           {auth.token && <Header />}
           {status && <StatusModal />}
+          {auth.token && <SocketClient />}
           <Route exact path="/" component={auth.token ? Home : Login} />
           <Route exact path="/register" component={Register} />
 

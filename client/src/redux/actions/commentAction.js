@@ -3,10 +3,13 @@ import { DeleteData, EditData, GLOBALTYPES } from "./globalTypes";
 import { POST_TYPES } from "./postAction";
 
 export const createComment =
-  ({ post, newComment, auth }) =>
+  ({ post, newComment, auth, socket }) =>
   async (dispatch) => {
     const newPost = { ...post, comments: [...post.comments, newComment] };
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+
+    // Socket
+    socket.emit("createComment", newPost)
     try {
       const data = { ...newComment, postId: post._id, postUserId: post.user._id };
       const res = await postDataAPI("comment", data, auth.token);
@@ -76,7 +79,7 @@ export const unLikeComment =
   };
 
   export const deleteComment =
-  ({ comment, post, auth }) =>
+  ({ comment, post, auth, socket }) =>
   async (dispatch) => {
     const deleteArr = [...post.comments.filter(cm => cm.reply === comment._id), comment]
 
@@ -85,6 +88,8 @@ export const unLikeComment =
       comments: post.comments.filter(cm => !deleteArr.find(da => cm._id === da._id))
     }
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+
+    socket.emit("deleteComment", newPost)
     try {
       deleteArr.forEach(item => {
         deleteDataAPI(`comment/${item._id}`, auth.token);

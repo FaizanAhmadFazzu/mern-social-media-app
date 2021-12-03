@@ -92,13 +92,15 @@ export const updatePost =
   };
 
 export const likePost =
-  ({ post, auth }) =>
+  ({ post, auth, socket }) =>
   async (dispatch) => {
     const newPost = { ...post, likes: [...post.likes, auth.user] };
     dispatch({
       type: POST_TYPES.UPDATE_POST,
       payload: newPost,
     });
+
+    socket.emit("likePost", newPost);
     try {
       await patchDataAPI(`post/${post._id}/like`, null, auth.token);
     } catch (err) {
@@ -110,7 +112,7 @@ export const likePost =
   };
 
 export const unLikePost =
-  ({ post, auth }) =>
+  ({ post, auth, socket }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
@@ -120,6 +122,8 @@ export const unLikePost =
       type: POST_TYPES.UPDATE_POST,
       payload: newPost,
     });
+
+    socket.emit("unLikePost", newPost)
     try {
       await patchDataAPI(`post/${post._id}/unlike`, null, auth.token);
     } catch (err) {
@@ -151,7 +155,7 @@ export const deletePost =
   async (dispatch) => {
     dispatch({ type: POST_TYPES.DELETE_POST, payload: post });
     try {
-      const res = await deleteDataAPI(`post/${post._id}`, auth.token);
+     await deleteDataAPI(`post/${post._id}`, auth.token);
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -175,10 +179,13 @@ export const savePost =
     }
   };
 
-  export const unSavePost =
+export const unSavePost =
   ({ post, auth }) =>
   async (dispatch) => {
-    const newUser = { ...auth.user, saved: auth.user.saved.filter(id => id !== post._id ) };
+    const newUser = {
+      ...auth.user,
+      saved: auth.user.saved.filter((id) => id !== post._id),
+    };
     dispatch({ type: GLOBALTYPES.AUTH, payload: { ...auth, user: newUser } });
     try {
       await patchDataAPI(`unSavePost/${post._id}`, null, auth.token);
