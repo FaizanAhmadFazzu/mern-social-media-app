@@ -1,5 +1,9 @@
-import { deleteDataAPI, postDataAPI } from "../../utils/fetchData";
+import { deleteDataAPI, getDataAPI, postDataAPI } from "../../utils/fetchData";
 import { GLOBALTYPES } from "./globalTypes";
+
+export const NOTIFY_TYPES = {
+  GET_NOTIFIES: "GET_NOTIFIES",
+};
 
 export const createNotify =
   ({ msg, auth, socket }) =>
@@ -26,3 +30,16 @@ export const removeNotify =
       });
     }
   };
+
+export const getNotifies = (token) => async (dispatch) => {
+  try {
+    const res = await getDataAPI("notifies", token);
+    console.log(res.data);
+    dispatch({ type: NOTIFY_TYPES.GET_NOTIFIES, payload: res.data.notifies });
+  } catch (err) {
+    dispatch({
+      type: GLOBALTYPES.ALERT,
+      payload: { error: err.response.data.msg },
+    });
+  }
+};
