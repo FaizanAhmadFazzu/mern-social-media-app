@@ -3,6 +3,8 @@ import { GLOBALTYPES } from "./globalTypes";
 
 export const NOTIFY_TYPES = {
   GET_NOTIFIES: "GET_NOTIFIES",
+  CREATE_NOTIFY: "CREATE_NOTIFY",
+  REMOVE_NOTIFY: "REMOVE_NOTIFY",
 };
 
 export const createNotify =
@@ -10,6 +12,14 @@ export const createNotify =
   async (dispatch) => {
     try {
       const res = await postDataAPI("notify", msg, auth.token);
+
+      socket.emit("createNotify", {
+        ...res.data.notify,
+        user: {
+          username: auth.user.username,
+          avatar: auth.user.avatar,
+        },
+      });
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -23,6 +33,8 @@ export const removeNotify =
   async (dispatch) => {
     try {
       await deleteDataAPI(`notify/${msg.id}?url=${msg.url}`, auth.token);
+
+      socket.emit("removeNotify", msg);
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -34,7 +46,6 @@ export const removeNotify =
 export const getNotifies = (token) => async (dispatch) => {
   try {
     const res = await getDataAPI("notifies", token);
-    console.log(res.data);
     dispatch({ type: NOTIFY_TYPES.GET_NOTIFIES, payload: res.data.notifies });
   } catch (err) {
     dispatch({

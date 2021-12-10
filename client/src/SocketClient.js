@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBALTYPES } from "./redux/actions/globalTypes";
+import { NOTIFY_TYPES } from "./redux/actions/notifyAction";
 import { POST_TYPES } from "./redux/actions/postAction";
-
 
 const SocketClient = () => {
   const { auth, socket } = useSelector((state) => state);
@@ -60,7 +60,7 @@ const SocketClient = () => {
     socket.on("followToClient", (newUser) => {
       dispatch({
         type: GLOBALTYPES.AUTH,
-        payload: {...auth, user: newUser},
+        payload: { ...auth, user: newUser },
       });
     });
     return () => socket.off("followToClient");
@@ -70,10 +70,24 @@ const SocketClient = () => {
     socket.on("unFollowToClient", (newUser) => {
       dispatch({
         type: GLOBALTYPES.AUTH,
-        payload: {...auth, user: newUser},
+        payload: { ...auth, user: newUser },
       });
     });
     return () => socket.off("unFollowToClient");
+  }, [socket, dispatch, auth]);
+
+  useEffect(() => {
+    socket.on("createNotifyToClient", (msg) => {
+      dispatch({ type: NOTIFY_TYPES.CREATE_NOTIFY, payload: msg });
+    });
+    return () => socket.off("createNotifyToClient");
+  }, [socket, dispatch, auth]);
+
+  useEffect(() => {
+    socket.on("removeNotifyToClient", (msg) => {
+      dispatch({ type: NOTIFY_TYPES.REMOVE_NOTIFY, payload: msg });
+    });
+    return () => socket.off("removeNotifyToClient");
   }, [socket, dispatch, auth]);
 
   return <></>;

@@ -5,6 +5,8 @@ const notifyCtrl = {
     try {
       const { id, recipients, url, text, content, image } = req.body;
 
+      if (recipients.includes(req.user._id.toString())) return;
+
       const notify = new Notifies({
         id,
         recipients,
@@ -27,7 +29,6 @@ const notifyCtrl = {
         id: req.params.id,
         url: req.query.url,
       });
-      res.json({ notify });
       return res.json({ notify });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

@@ -43,9 +43,9 @@ export const createPost =
         url: `/post/${res.data.newPost._id}`,
         content,
         image: media[0].url,
-      }
+      };
 
-      dispatch(createNotify({msg, auth, socket}))
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -116,6 +116,18 @@ export const likePost =
     socket.emit("likePost", newPost);
     try {
       await patchDataAPI(`post/${post._id}/like`, null, auth.token);
+
+      // Notify
+      const msg = {
+        id: auth.user._id,
+        text: "like your post.",
+        recipients: [post.user._id],
+        url: `/post/${post._id}`,
+        content: post.content,
+        image: post.images.url,
+      };
+
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -136,9 +148,19 @@ export const unLikePost =
       payload: newPost,
     });
 
-    socket.emit("unLikePost", newPost)
+    socket.emit("unLikePost", newPost);
     try {
       await patchDataAPI(`post/${post._id}/unlike`, null, auth.token);
+
+      // Notify
+      const msg = {
+        id: auth.user._id,
+        text: "like your post.",
+        recipients: [post.user._id],
+        url: `/post/${post._id}`,
+      };
+
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -168,16 +190,16 @@ export const deletePost =
   async (dispatch) => {
     dispatch({ type: POST_TYPES.DELETE_POST, payload: post });
     try {
-     const res = await deleteDataAPI(`post/${post._id}`, auth.token);
+      const res = await deleteDataAPI(`post/${post._id}`, auth.token);
 
-    //  Notify
-     const msg = {
-      id: post._id,
-      text: "deleted a post",
-      recipients: res.data.newPost.user.followers,
-      url: `/post/${post._id}`
-     }
-     dispatch(removeNotify({ msg, auth, socket }))
+      //  Notify
+      const msg = {
+        id: post._id,
+        text: "added a new post.",
+        recipients: res.data.newPost.user.followers,
+        url: `/post/${post._id}`,
+      };
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,

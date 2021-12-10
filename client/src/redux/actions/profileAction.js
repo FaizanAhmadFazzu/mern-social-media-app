@@ -1,6 +1,7 @@
 import { getDataAPI, patchDataAPI } from "../../utils/fetchData";
 import { DeleteData, GLOBALTYPES } from "./globalTypes";
 import { imageUpload } from "../../utils/ImageUpload";
+import { createNotify, removeNotify } from "./notifyAction";
 
 export const PROFILE_TYPES = {
   LOADING: "LOADING",
@@ -137,6 +138,16 @@ export const follow =
         auth.token
       );
       socket.emit("follow", res.data.newUser);
+
+      // Notify
+      const msg = {
+        id: auth.user._id,
+        text: "has started to follow you",
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
+
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -187,6 +198,16 @@ export const unFollow =
         auth.token
       );
       socket.emit("unFollow", res.data.newUser);
+
+      // Notify
+      const msg = {
+        id: auth.user._id,
+        text: "has started to follow you",
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
+
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
