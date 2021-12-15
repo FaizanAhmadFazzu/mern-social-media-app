@@ -1,12 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBALTYPES } from "./redux/actions/globalTypes";
 import { NOTIFY_TYPES } from "./redux/actions/notifyAction";
 import { POST_TYPES } from "./redux/actions/postAction";
 
+import audiobell from "./audio/audio_got-it-done-613.mp3";
+
+const spawnNotification = (body, icon, url, title) => {
+  let options = {
+    body,
+    icon,
+  };
+  let n = new Notification(title, options);
+
+  n.onclick = (e) => {
+    e.preventDefault();
+    window.open(url, "_blank");
+  };
+};
+
 const SocketClient = () => {
-  const { auth, socket } = useSelector((state) => state);
+  const { auth, socket, notify } = useSelector((state) => state);
   const dispatch = useDispatch();
+
+  const audioRef = useRef();
 
   // joinUser
   useEffect(() => {
@@ -76,12 +93,20 @@ const SocketClient = () => {
     return () => socket.off("unFollowToClient");
   }, [socket, dispatch, auth]);
 
+  // Notification
   useEffect(() => {
     socket.on("createNotifyToClient", (msg) => {
       dispatch({ type: NOTIFY_TYPES.CREATE_NOTIFY, payload: msg });
+      if (notify.sound) audioRef.current.play();
+      spawnNotification(
+        msg.user.username + " " + msg.text,
+        msg.user.avatar,
+        msg.url,
+        "V-NETWORK"
+      );
     });
     return () => socket.off("createNotifyToClient");
-  }, [socket, dispatch, auth]);
+  }, [socket, dispatch, notify.sound]);
 
   useEffect(() => {
     socket.on("removeNotifyToClient", (msg) => {
@@ -90,7 +115,13 @@ const SocketClient = () => {
     return () => socket.off("removeNotifyToClient");
   }, [socket, dispatch, auth]);
 
-  return <></>;
+  return (
+    <>
+      <audio controls ref={audioRef} style={{ display: "none" }}>
+        <source src={audiobell}></source>
+      </audio>
+    </>
+  );
 };
 
 export default SocketClient;
