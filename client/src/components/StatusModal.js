@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Icons from "./Icons";
 import { GLOBALTYPES } from "../redux/actions/globalTypes";
 import { createPost, updatePost } from "../redux/actions/postAction";
 
@@ -20,8 +21,8 @@ const StatusModal = () => {
     files.forEach((file) => {
       if (!file) return (err = "File does not exist.");
 
-      if (file.type !== "image/jpeg" && file.type !== "image/png") {
-        return (err = "Image format is incorrect.");
+      if (file.size > 1024 * 1024 * 5) {
+        return (err = "The image/video largest is 5mb.");
       }
       return newImages.push(file);
     });
@@ -76,11 +77,11 @@ const StatusModal = () => {
         type: GLOBALTYPES.ALERT,
         payload: { error: "Please add your photo." },
       });
-      if(status.onEdit){
-        dispatch(updatePost({ content, images, auth, status }));
-      } else {
-        dispatch(createPost({ content, images, auth, socket }));
-      }
+    if (status.onEdit) {
+      dispatch(updatePost({ content, images, auth, status }));
+    } else {
+      dispatch(createPost({ content, images, auth, socket }));
+    }
     setContent("");
     setImages([]);
     if (tracks) tracks.stop();
@@ -93,6 +94,29 @@ const StatusModal = () => {
       setImages(status.images);
     }
   }, [status]);
+
+  const imageShow = (src, theme) => {
+    return (
+      <img
+        src={src}
+        alt="images"
+        className="img-thumbnail"
+        style={{ filter: theme ? "invert(1)" : "invert(0)" }}
+      />
+    );
+  };
+
+  const videoShow = (src, theme) => {
+    return (
+      <video
+        controls
+        src={src}
+        alt="images"
+        className="img-thumbnail"
+        style={{ filter: theme ? "invert(1)" : "invert(0)" }}
+      />
+    );
+  };
 
   return (
     <div className="status_modal">
@@ -119,22 +143,31 @@ const StatusModal = () => {
               color: theme ? "white" : "#111",
               background: theme ? "rgba(0, 0, 0, .03)" : "",
             }}
-          ></textarea>
+          />
+
+          <div className="d-flex">
+            <div className="flex-fill"></div>
+            <Icons content={content} setContent={setContent} theme={theme} />
+          </div>
 
           <div className="show_images">
             {images.map((img, index) => (
               <div key={index} id="file_img">
-                <img
-                  src={
-                    img.camera
-                      ? img.camera
-                      : img.url
-                      ? img.url
-                      : URL.createObjectURL(img)
-                  }
-                  alt="images"
-                  style={{ filter: theme ? "invert(1)" : "invert(0)" }}
-                />
+                {img.camera ? (
+                  imageShow(img.camera, theme)
+                ) : img.url ? (
+                  <>
+                    {img.url.match(/video/i)
+                      ? videoShow(img.url, theme)
+                      : imageShow(img.url, theme)}
+                  </>
+                ) : (
+                  <>
+                    {img.type.match(/video/i)
+                      ? videoShow(URL.createObjectURL(img), theme)
+                      : imageShow(URL.createObjectURL(img), theme)}
+                  </>
+                )}
                 <span onClick={() => deleteImages(index)}>&times;</span>
               </div>
             ))}

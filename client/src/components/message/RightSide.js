@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import UserCard from "../UserCard";
 import MsgDisplay from "./MsgDisplay";
 const RightSide = () => {
-  const { auth, message } = useSelector((state) => state);
+  const { message } = useSelector((state) => state);
   const { id } = useParams();
 
   const [user, setUser] = useState([]);
@@ -43,7 +43,11 @@ const RightSide = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <button type="submit" className="material-icons" disabled={text ? false : true}>
+        <button
+          type="submit"
+          className="material-icons"
+          disabled={text ? false : true}
+        >
           near_me
         </button>
       </form>
