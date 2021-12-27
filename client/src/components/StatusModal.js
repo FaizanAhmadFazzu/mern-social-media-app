@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Icons from "./Icons";
 import { GLOBALTYPES } from "../redux/actions/globalTypes";
 import { createPost, updatePost } from "../redux/actions/postAction";
+import { imageShow, videoShow } from "../utils/mediaShow";
 
 const StatusModal = () => {
   const dispatch = useDispatch();
@@ -95,28 +96,7 @@ const StatusModal = () => {
     }
   }, [status]);
 
-  const imageShow = (src, theme) => {
-    return (
-      <img
-        src={src}
-        alt="images"
-        className="img-thumbnail"
-        style={{ filter: theme ? "invert(1)" : "invert(0)" }}
-      />
-    );
-  };
 
-  const videoShow = (src, theme) => {
-    return (
-      <video
-        controls
-        src={src}
-        alt="images"
-        className="img-thumbnail"
-        style={{ filter: theme ? "invert(1)" : "invert(0)" }}
-      />
-    );
-  };
 
   return (
     <div className="status_modal">
