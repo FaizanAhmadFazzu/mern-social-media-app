@@ -91,7 +91,7 @@
   margin: 0 10px;
 }
 
-.chat_input .file_upload #file{
+.chat_input .file_upload #file {
   position: absolute;
   top: 0;
   left: 0;
@@ -163,7 +163,6 @@
   margin-bottom: 10px;
 }
 
-
 .you_message {
   justify-content: end;
   justify-items: end;
@@ -176,7 +175,7 @@
 
 .chat_text {
   padding: 9px 14px;
-   margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .chat_time {
@@ -185,9 +184,9 @@
 }
 
 .you_message .chat_text {
-  background: #0048AA;
+  background: #0048aa;
   color: white;
-  border: 1px solid #0048AA;
+  border: 1px solid #0048aa;
   border-radius: 14px 14px 0 14px;
 }
 
@@ -202,4 +201,20 @@
   margin-bottom: 3px;
 }
 
+.you_content {
+  position: relative;
+}
 
+.you_content .fa-trash {
+  position: absolute;
+  top: 50%;
+  left: -15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+}
+
+.you_content:hover .fa-trash {
+  opacity: 1;
+}

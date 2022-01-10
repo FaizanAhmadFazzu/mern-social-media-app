@@ -1,10 +1,10 @@
+import { EditData } from "../actions/globalTypes";
 import { MESS_TYPES } from "../actions/messageAction";
 
 const initialState = {
   users: [],
   resultUsers: 0,
   data: [],
-  resultData: 0,
   firstLoad: false,
 };
 
@@ -21,7 +21,16 @@ const messageReducer = (state = initialState, action) => {
     case MESS_TYPES.ADD_MESSAGE:
       return {
         ...state,
-        data: [...state.data, action.payload],
+        data: state.data.map((item) =>
+          item._id === action.payload.recipient ||
+          item._id === action.payload.sender
+            ? {
+                ...item,
+                messages: [...item.messages, action.payload],
+                result: item.result + 1,
+              }
+            : item
+        ),
         users: state.users.map((user) =>
           user._id === action.payload.recipient ||
           user._id === action.payload.sender
@@ -45,8 +54,22 @@ const messageReducer = (state = initialState, action) => {
     case MESS_TYPES.GET_MESSAGES:
       return {
         ...state,
-        data: action.payload.messages.reverse(),
-        resultData: action.payload.result,
+        data: [...state.data, action.payload],
+      };
+    case MESS_TYPES.UPDATE_MESSAGES:
+      return {
+        ...state,
+        data: EditData(state.data, action.payload, action.payload._id),
+      };
+
+    case MESS_TYPES.DELETE_MESSAGES:
+      return {
+        ...state,
+        data: state.data.map((item) =>
+          item._id === action.payload._id
+            ? { ...item, messages: action.payload.newData }
+            : item
+        ),
       };
 
     default:
