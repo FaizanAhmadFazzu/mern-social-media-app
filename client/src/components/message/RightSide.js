@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import UserCard from "../UserCard";
 import MsgDisplay from "./MsgDisplay";
@@ -12,6 +12,7 @@ import {
   addMessage,
   getMessages,
   loadMoreMessages,
+  deleteConversation,
 } from "../../redux/actions/messageAction";
 import loadIcon from "../../images/loading.gif";
 
@@ -33,6 +34,8 @@ const RightSide = () => {
   const [result, setResult] = useState(0);
   const [page, setPage] = useState(0);
   const [isLoadMore, setIsLoadMore] = useState(0);
+
+  const history = useHistory();
 
   useEffect(() => {
     const newData = message.data.find((item) => item._id === id);
@@ -159,12 +162,22 @@ const RightSide = () => {
     }
   }, [text]);
 
+  const handleDeleteConversation = () => {
+    if (window.confirm("Do you want to delete?")) {
+      dispatch(deleteConversation({ auth, id }));
+      history.push("/message");
+    }
+  };
+
   return (
     <>
       <div className="message_header" style={{ cursor: "pointer" }}>
         {user.length !== 0 && (
           <UserCard user={user}>
-            <i className="fas fa-trash text-danger" />
+            <i
+              className="fas fa-trash text-danger"
+              onClick={handleDeleteConversation}
+            />
           </UserCard>
         )}
       </div>

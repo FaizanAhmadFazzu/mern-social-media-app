@@ -1,4 +1,4 @@
-import { EditData } from "../actions/globalTypes";
+import { DeleteData, EditData } from "../actions/globalTypes";
 import { MESS_TYPES } from "../actions/messageAction";
 
 const initialState = {
@@ -69,6 +69,22 @@ const messageReducer = (state = initialState, action) => {
           item._id === action.payload._id
             ? { ...item, messages: action.payload.newData }
             : item
+        ),
+      };
+    case MESS_TYPES.DELETE_CONVERSATION:
+      return {
+        ...state,
+        users: DeleteData(state.users, action.payload),
+        data: DeleteData(state.data, action.payload),
+      };
+
+    case MESS_TYPES.CHECK_ONLINE_OFFLINE:
+      return {
+        ...state,
+        users: state.users.map((user) =>
+          action.payload.includes(user._id)
+            ? { ...user, online: true }
+            : { ...user, online: false }
         ),
       };
 
